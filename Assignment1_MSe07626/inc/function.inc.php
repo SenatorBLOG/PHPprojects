@@ -29,7 +29,7 @@ function generateOrder(){
 }
 function getSubTotal($amount, $price){
     $subTotal = 0;
-    for ($i = 'A'; $i < count($amount); $i++) {
+    for ($i = 0; $i < count($amount); $i++) {
         $subTotal += $amount[$i] * $price[$i];
     }
     return $subTotal;
@@ -46,7 +46,7 @@ function getDiscountedTotal($subTotal, $discountThreshold){
     return $returnDiscount;               
 }
 function calculateAndPrintOrder($orderData, $price, $discountThreshold){
-    echo "Order","Product A", "Product B", "Product C", "Discount", "Sub Total";
+    printf("%-10s %-10s %-10s %-10s %-10s %-10s\n", "Order","Product A","Product B","Product C","Discount", "Sub Total");
     foreach($orderData as $order){
         $amount = $order['amount'];
         $id = $order['id'];
@@ -55,7 +55,7 @@ function calculateAndPrintOrder($orderData, $price, $discountThreshold){
         $discounted = $subTotal * (1 - $discountPercentage);
         $finalTotal = $discounted * (1 + TAX_RATE);
 
-        printf("%-10s,%-10d,%-10d,%-10d\n", $id,$amount[0],
+        printf("%-10s %-10d %-10d %-10d %-10s %-10s\n", $id, $amount[0],
         $amount[1],$amount[2],($discountPercentage  * 100)."%","$".number_format($finalTotal,2));
     }
     

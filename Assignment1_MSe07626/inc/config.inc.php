@@ -6,5 +6,5 @@ define("MIN_AMOUNT", 0);
 define("MAX_AMOUNT", 10);
 define("TAX_RATE", 0.12);
 
-$itemPrice = ['A'=> 30, 'B' => 30, 'C' => 40];
+$itemPrice = [30, 30, 40];
 $discountThreshold = ['0'=> 0, '200'=> 0.05, '300'=>0.1, '500'=>0.15, '700'=>0.25];
