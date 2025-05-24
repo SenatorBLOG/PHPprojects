@@ -1,9 +1,5 @@
 <?php
 
-//Header function
-
-use BcMath\Number;
-
 function getHeader(){
     echo "----------------------------------------------------------------------------------------------\n\n";
     echo "          Product order calculator app by " . APP_DEVELOPER . "  (" . APP_ID . ")             \n\n";
@@ -23,7 +19,7 @@ function generateOrder(){
             'id' => $orderId,
             'amount' => $amount
         ];
-        array_push($orderData,$order);
+        array_push($orderData, $order);
     }
     return $orderData;
 }
@@ -34,7 +30,7 @@ function getSubTotal($amount, $price){
     }
     return $subTotal;
 }
-function getDiscountedTotal($subTotal, $discountThreshold){
+function getDiscountedPercentage($subTotal, $discountThreshold){
     $returnDiscount = 0;
     foreach($discountThreshold as $key => $discount){
         if($subTotal >= $key) {
@@ -51,7 +47,7 @@ function calculateAndPrintOrder($orderData, $price, $discountThreshold){
         $amount = $order['amount'];
         $id = $order['id'];
         $subTotal = getSubTotal($order['amount'],$price);
-        $discountPercentage = getDiscountedTotal($subTotal, $discountThreshold);
+        $discountPercentage = getDiscountedPercentage($subTotal, $discountThreshold);
         $discounted = $subTotal * (1 - $discountPercentage);
         $finalTotal = $discounted * (1 + TAX_RATE);
 
