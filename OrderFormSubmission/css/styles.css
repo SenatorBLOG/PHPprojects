@@ -1,0 +1,150 @@
+/* Mikhail Senatorov 300407626 */
+
+*{
+    box-sizing: border-box;   
+    margin:0; 
+}
+
+/* structure */
+html{
+    background-color: teal;
+}
+body{
+    background-color: azure;
+    border: 1px solid black;
+    display: table;
+    width: 85%;
+    margin: auto;
+    min-height: 800px;
+    padding: 20px;
+    font-size: 14pt;
+}
+article{
+    padding: 10px;
+    
+    display: grid;
+    grid-template-columns: 50% 50%; 
+    grid-template-rows: 700px 100px;               
+}
+section{
+    margin: 30px 0px;
+    padding: 15px;
+}
+/*
+section.main{
+    float: left;
+    width: 45%;
+    min-width: 450px;
+    display: flex; 
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: stretch;   
+    border-right: 1px dotted black;
+}
+section.sidebar{
+    float: right;
+    width: 53%;    
+    display: flex; 
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: stretch;   
+}*/
+th{
+    color: white;
+    font-weight: bold;
+    background-color: cadetblue;
+    text-align: left;
+}
+table{
+    width: 100%;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+tr, td, th{
+    padding: 5px;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+div.data{
+    flex: 1 0 100%;
+}
+
+section.sidebar{
+    grid-row:1/2;
+    grid-column: 2/3;
+    border-bottom: 1px dotted black;
+    border-left: 1px dotted black;
+}
+section.main{
+    grid-row:1/2;
+    grid-column: 1/2;    
+    border-left: 1px dotted black;
+}
+div.highlight{
+    flex: 1 0 100%;
+    margin-bottom: 20px;
+}
+div.form{
+    flex: 1 0 100%;
+}
+
+/* form */
+/**  form structure **/
+form{    
+    display: flex;
+    flex-flow: row wrap;
+}
+fieldset{    
+    flex: 1 1 600px;
+}
+fieldset > div{    
+    display: flex;
+    flex-flow: row wrap;
+    margin: 10px;
+}
+fieldset > div >*{
+    flex: 1 1 300px;
+    
+}
+
+/**  form style **/
+
+textarea {
+    margin-top: 10px;
+    height: 100px;
+    width: 95%;
+ }
+ div#button {
+    flex:1 1 100%;
+    text-align: center;    
+ }
+
+ fieldset{
+    margin: 10px;
+}
+legend{
+    padding: 5px 20px;
+    background-color: cadetblue;
+    border-radius: 5px;
+    color: snow;
+}
+
+input, select{
+    border-radius: 2px;
+    margin-bottom: 2px;
+}
+
+input[type="submit"],input[type="reset"]{
+    margin: 5px;
+    width: 49%;
+    line-height: 1.5em;
+    font-weight: bold;
+}
+
+/* Other style */
+.highlight{
+    border-radius: 5px; 
+    background-color: firebrick;
+    padding: 15px;
+    color:snow
+}

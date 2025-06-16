@@ -8,13 +8,13 @@ function inputValues(){
 function tierConvert($hours,&$timeSheet){
 
         if($hours < 40){
-            $row['hours'] = $hours;
+            $timeSheet['hours'] = $hours;
         } elseif ($hours >= 40 || $hours <50){
-            $row['hours'] = 40;
+            $timeSheet['hours'] = 40;
             $timeSheet['tier2']['hours'] = $hours - 40 ;
             
         } else {
-            $row['hours'] = 40;
+            $timeSheet['hours'] = 40;
             $timeSheet['tier2']['hours'] = 50 ;
             $timeSheet['tier3']['hours'] = $hours - 50;
         }
