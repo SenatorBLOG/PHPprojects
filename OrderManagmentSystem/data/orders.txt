@@ -1,0 +1,3 @@
+Order Type,Customer ID,Amount,Gift Wrap,Shipping
+regular, C112A, 2, , regular, 
+regular, C222D, 6, yes, priority, 

@@ -2,7 +2,7 @@
 
 class Page{
 
-    static $title = "Order Managment System";
+    static $title = "Order Management System";
     static $developer = "Mikhail Senatorov";
 
     static function getHeader($title){
@@ -23,11 +23,11 @@ class Page{
         <?php
     }
 
-    static function getForm(){
+    static function getForm($errors = []){
         ?>
         <section id="add-order">
             <h2>Add New Order</h2>
-            <form action="index.php" method="post">
+            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                 <label for="order_type">Order Type:</label>
                 <select id="order_type" name="order_type">
                     <option value="regular">Regular</option>
@@ -45,6 +45,7 @@ class Page{
                     <option value="express">Express ($15)</option>
                     <option value="priority">Priority ($25)</option>
                 </select><br>
+                <input type="hidden" name="fileName" value="<?php echo FileUtility::$currentFile; ?>">
                 <input type="submit" name="submit" value="Add Order">
                 <input type="reset" value="Reset">
             </form>
@@ -61,7 +62,7 @@ class Page{
         </section>
         <?php
     }
-    static function getOrders(){
+    static function getOrders($orders){
         ?>
         <section id="order-list">
             <h2>Existing Orders</h2>

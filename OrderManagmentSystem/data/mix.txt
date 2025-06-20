@@ -1,0 +1,353 @@
+<?php
+
+date_default_timezone_set("America/Vancouver");
+
+define("LOGFILE","log/error_log.txt");
+  
+// setting error logging to be active 
+ini_set("log_errors", TRUE);
+  
+// setting the logging file in php.ini 
+ini_set("error_log", LOGFILE);
+
+// for file operation
+define("REPOSITORY","data/");
+define("FILEDATA","orders.txt");
+define("FILENAME",REPOSITORY.FILEDATA);
+
+define("ITEM_COST",25);
+define("WRAP_COST",10);
+define("DISCOUNT",0.15);
+define("TAX",0.12);
+
+$shippingCost = ['regular' => 6, 'express' => 15, 'premium' => 25];
+<?php
+
+class FileUtility{
+
+    static $notifications = array();
+    static $fileCounter = 0;
+    static $currentFile = '';
+
+    static function initialize ($fileName){
+        self::$currentFile = $fileName;
+    }
+
+    static function open($mode){
+        if(file_exists(self::$currentFile)){
+            $fh = fopen(self::$currentFile, $mode);
+            return $fh;
+        }
+        else {
+            self::$notifications [] = "File does not exist";
+            return false;
+        }
+    }
+
+    static function close($fh){
+        fclose($fh);
+    }
+
+    static function read(){
+        $contents = '';
+
+        try{
+            if($fh = self::open('r')){
+                $contents = fread($fh, filesize(self::$currentFile));
+                self::close($fh);
+            } else {
+                throw new Exception("Cannnot read from the file " . self::$currentFile);
+            }
+        } catch (Exception $fe){
+            self::$notifications [] = array($fe -> getMessage());
+        }
+        return $contents;
+    }
+
+    static function write($data){
+        try{
+            if($fh = self::open('a')){
+                flock($fh,LOCK_EX);
+                fwrite($fh, $data, strlen($data));
+                flock($fh,LOCK_EX);
+                self::close($fh);
+            }
+        } catch (Exception $fe){
+            self::$notifications [] = array ($fe -> getMessage());
+        }
+    }
+}
+\<?php
+require_once('inc/config.inc.php');
+
+class Order{
+    public $type;
+    public $custID = '';
+    public $amount = 0;
+    public $giftWrap = true;
+    public $shipping;
+    public $shippingCost;
+
+    function __construct($custID, $amount, $giftWrap, $shipping){
+        $this->custID = $custID;
+        $this->amount = $amount;
+        $this->giftWrap = $giftWrap;
+        $this->shipping = $shipping;
+    }
+    function calculateTotal(){
+        $totalCost = 0;
+        $subTotal = $this->amount * ITEM_COST;
+        if($subTotal > 100){
+            $subTotal -= $subTotal * DISCOUNT;
+        }
+        if($this->giftWrap){
+            $subTotal += WRAP_COST;
+        }
+        if(isset($this->shippingCost[$this->shippingCost])){
+            $subTotal += $this->shippingCost[$this->shipping];
+        }
+        $totalCost = $subTotal * TAX;
+        return $totalCost;
+
+
+    }
+
+}
+<?php
+
+class OrderData{
+    static $orders = array();
+    static $ordersString = '';
+
+    function parseRead($fileContent){
+        $lines = explode("\n",$fileContent);
+
+        for($index = 1; $index < count($lines); $index++){
+            $columns = explode(",", $lines[$index]);
+
+            $object = null;
+
+            $type = trim($columns[1]);
+            $custID = trim($columns[2]);
+            $amount = trim($columns[3]);
+            $giftWrap  = trim($columns[4]);
+            $shipping = trim($columns[5]);
+
+            switch($type){
+                case "regular":
+                    $object = new Regular($custID, $amount, $giftWrap, $shipping);
+                    break;
+                case "special":
+                    $object = new Special($custID, $amount, $giftWrap, $shipping);
+                    break;
+                default:
+                    $object = new Order($custID, $amount, $giftWrap, $shipping);
+                    $object->type = "Unknown";
+                    break;
+            }
+            self::$orders [] = $object;
+        }
+    }
+    function parseWrite(){
+        $type = $_POST['type'];
+        $custID = $_POST['custID'];
+        $amount = $_POST['amount'];
+        $giftWrap  = $_POST['giftWrap'];
+        $shipping = $_POST['shipping'];
+
+        $this -> orderString = "\n" . $type . ", " . $custID . ", " . $amount . ", " . $giftWrap . ", " . $shipping . ", ";
+    }
+}
+<?php
+
+class Page{
+
+    static $title = "Order Managment System";
+    static $developer = "Mikhail Senatorov";
+
+    static function getHeader($title){
+        ?>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Order Management System</title>
+            <link rel="stylesheet" href="css/styles.css">
+        </head>
+        <body>
+        <header>
+            <h1><?php echo "$title" ?></h1>
+        </header>
+        <main>
+        <?php
+    }
+
+    static function getForm(){
+        ?>
+        <section id="add-order">
+            <h2>Add New Order</h2>
+            <form action="managingSystem.php" method="post">
+                <label for="order_type">Order Type:</label>
+                <select id="order_type" name="order_type">
+                    <option value="regular">Regular</option>
+                    <option value="special">Special</option>
+                </select><br>
+                <label for="cust_id">Customer ID:</label>
+                <input type="text" id="cust_id" name="cust_id"><br>
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" name="amount"><br>
+                <label for="gift_wrap">Gift Wrap:</label>
+                <input type="checkbox" id="gift_wrap" name="gift_wrap" value="yes"><br>
+                <label for="shipping">Shipping Method:</label>
+                <select id="shipping" name="shipping">
+                    <option value="regular">Regular ($6)</option>
+                    <option value="express">Express ($15)</option>
+                    <option value="priority">Priority ($25)</option>
+                </select><br>
+                 <input type="hidden" name="fileName" value="<?=FileUtility::$currentFile?>">
+                <input type="submit" name="submit" value="Add Order">
+                <input type="reset" value="Reset">
+            </form>
+            <?php
+            // Display errors here
+            if (isset($errors)) {
+                echo '<div class="errors">';
+                foreach ($errors as $error) {
+                    echo '<p>' . $error . '</p>';
+                }
+                echo '</div>';
+            }
+            ?>
+        </section>
+        <?php
+    }
+    static function getOrders(){
+        ?>
+        <section id="order-list">
+            <h2>Existing Orders</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order Type</th>
+                        <th>Customer ID</th>
+                        <th>Amount</th>
+                        <th>Gift Wrap</th>
+                        <th>Shipping</th>
+                        <th>Total Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    // Display orders here
+                    if (isset($orders)) {
+                        foreach ($orders as $order) {
+                            echo '<tr>';
+                            echo '<td>' . $order->type . '</td>';
+                            echo '<td>' . $order->custID . '</td>';
+                            echo '<td>' . $order->amount . '</td>';
+                            echo '<td>' . ($order->giftWrap ? 'Yes' : 'No') . '</td>';
+                            echo '<td>' . $order->shipping . '</td>';
+                            echo '<td>$' . number_format($order->calculateTotal(), 2) . '</td>';
+                            echo '</tr>';
+                        }
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </section>
+        <?php
+    }
+
+    static function getFooter($developer){
+        ?>
+                </main>
+            <footer>
+                <p>&copy; 2025 Order Management System by <?php echo "$developer" ?> </p>
+            </footer>
+        </body>
+        </html>
+        <?php
+    }
+}
+<?php
+
+class Regular extends Order{
+    public $type = 'Regular';
+
+    function __construct($custID, $amount, $giftWrap, $shipping){
+        parent::__construct($custID, $amount, $giftWrap, $shipping);
+    }
+}
+<?php
+
+class Special extends Order{
+    public $type = 'Special';
+
+    function __construct($custID, $amount, $giftWrap, $shipping){
+        parent::__construct($custID, $amount, $giftWrap, $shipping);
+    }
+}
+<?php
+
+class Validate{ 
+    static $errors = array();
+
+    static function validate(){
+        $validType = trim($type = $_POST['type']);
+        if(empty($validType)){
+            self::$errors['Name Error'] = "Please enter a Name"; 
+        }
+        $validCustID = trim($_POST['custID']);
+        if(empty($validCustID)){
+            self::$errors['ID Error'] = "Please enter Customer ID";
+        } else if (preg_match('/^C\d{3}[A-Z]$',$validCustID)){
+            self::$errors['ID Error'] = "ID must follow the format C000A";
+        }
+        $validAmount = filter_input(INPUT_POST, 'amount', FILTER_VALIDATE_INT,
+        [ "options" => ["min_range" => 1, "max_range" => 10]]);
+        if(!$validAmount){
+            self::$errors ['Amount Error'] = "Please enter amount from 1 to 10";
+        }
+
+        if (!isset($_POST['giftWrap'])) {
+            self::$errors['Gift Wrap Error'] = "Please select a gift wrap option";
+        }
+        if (!isset($_POST['shipping']) || $_POST['shipping'] === 'Select...') {
+            self::$errors['Shipping Error'] = "Please select a shipping option";
+        }
+        return self::$errors;
+    }
+}
+<?php
+require_once('inc/config.inc.php');
+require_once('inc/Page.class.php');
+require_once('inc/FileUtility.class.php');
+require_once('inc/Validate.class.php');
+
+require_once('inc/OrderData.class.php');
+require_once('inc/Order.class.php');
+require_once('inc/Special.class.php');
+require_once('inc/Regular.class.php');
+
+FileUtility::initialize(FILENAME);
+
+$orderData = new OrderData();
+
+if(isset($_POST['submit'])){
+    $errors = Validate::validate();
+    if(empty($errors)){
+        $orderString -> parseWrite();
+        FileUtility::write($orderstring);
+    }
+    $notifications = FileUtility::$notifications;
+}
+
+$content = FileUtility::read();
+$orderData->parseRead($content);
+
+
+Page::getHeader(Page::$title);
+Page::getForm();
+Page::getOrders();
+Page::getFooter(Page::$developer);
