@@ -29,4 +29,35 @@ class Validate{
         
         return self::$errors;
     }
+    static function validateCsvRow(array $columns, int $lineNum): bool {
+        if (count($columns) !== 4) {
+            self::$errors[] = "Line $lineNum: Expected 4 values, found " . count($columns);
+            return false;
+        }
+
+        [$date, $temperature, $humidity, $condition] = array_map('trim', $columns);
+
+        $d = DateTime::createFromFormat('d-m-Y', $date);
+        if (!($d && $d->format('d-m-Y') === $date)) {
+            self::$errors[] = "Line $lineNum: Invalid date format ($date), expected d-m-Y";
+            return false;
+        }
+
+        if (!is_numeric($temperature) || $temperature < -50 || $temperature > 50) {
+            self::$errors[] = "Line $lineNum: Temperature ($temperature) must be between -50 and 50";
+            return false;
+        }
+
+        if (!is_numeric($humidity) || $humidity < 0 || $humidity > 100) {
+            self::$errors[] = "Line $lineNum: Humidity ($humidity) must be between 0 and 100";
+            return false;
+        }
+
+        if (empty($condition)) {
+            self::$errors[] = "Line $lineNum: Condition cannot be empty";
+            return false;
+        }
+
+        return true;
+    }
 }
