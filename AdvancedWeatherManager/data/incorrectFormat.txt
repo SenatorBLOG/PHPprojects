@@ -1,0 +1,465 @@
+<?php
+
+class FileUtility{
+
+    static $notifications = array();
+    static $fileCounter = 0;
+    static $currentFile = '';
+
+    static function initialize ($fileName){
+        self::$currentFile = $fileName;
+    }
+
+    static function open($mode){
+        if(file_exists(self::$currentFile)){
+            $fh = fopen(self::$currentFile, $mode);
+            return $fh;
+        }
+        else {
+            self::$notifications [] = "File does not exist";
+            return false;
+        }
+    }
+
+    static function close($fh){
+        fclose($fh);
+    }
+
+    static function read(){
+        $contents = '';
+
+        try{
+            if($fh = self::open('r')){
+                $contents = fread($fh, filesize(self::$currentFile));
+                self::close($fh);
+            } else {
+                throw new Exception("Cannnot read from the file " . self::$currentFile);
+            }
+        } catch (Exception $fe){
+            self::$notifications [] = array($fe -> getMessage());
+        }
+        return $contents;
+    }
+
+    static function write($data){
+        try{
+            if($fh = self::open('a')){
+                flock($fh,LOCK_EX);
+                fwrite($fh, $data, strlen($data));
+                flock($fh,LOCK_UN);
+                self::close($fh);
+            }
+        } catch (Exception $fe){
+            self::$notifications [] = array ($fe -> getMessage());
+        }
+    }
+    static function upload($inputName, $allowedTypes = ['text/csv', 'text/plain']){
+        $file = $_FILES[$inputName] ?? null;
+        if (!$file || $file['error'] === UPLOAD_ERR_NO_FILE) {
+            self::$notifications[] = "Error: No file selected for upload.";
+            return '';
+        }
+
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            self::$notifications[] = "Error: Upload failed with error code " . $file['error'];
+            return '';
+        }
+
+        if (!in_array($file['type'], $allowedTypes)) {
+            self::$notifications[] = "Error: Invalid file type.";
+            return '';
+        }
+
+        $safeName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $file['name']);
+        $targetPath = REPOSITORY . self::$fileCounter . '_' . $safeName;
+
+        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+            self::$notifications[] = "Success: File uploaded successfully.";
+            self::$fileCounter++;
+            return $targetPath;
+        } else {
+            self::$notifications[] = "Error: Failed to move uploaded file.";
+            return '';
+        }
+    }
+
+}
+<?php
+
+class Page{
+
+    static $title = "Weather Data Management System";
+    static $developer = "Mikhail Senatorov";
+
+    static function getHeader($title){
+        ?>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Weather Data Management System</title>
+            <link rel="stylesheet" href="css/styles.css">
+        </head>
+        <body>
+            <header>
+                <h1><?php echo "$title" ?></h1>
+            </header>
+            <main>
+        <?php
+    }
+    static function getForm($errors = []){
+        ?>
+        <section id="add-entry">
+            <h2>Add New Weather Entry</h2>
+            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                <label for="date">Date (DD-MM-YYYY):</label>
+                <input type="text" id="date" name="date" required><br>
+                <label for="temperature">Temperature (°C):</label>
+                <input type="number" id="temperature" name="temperature" step="0.1" required><br>
+                <label for="humidity">Humidity (%):</label>
+                <input type="number" id="humidity" name="humidity" min="0" max="100" step="0.1" required><br>
+                <label for="condition">Condition:</label>
+                <input type="text" id="condition" name="condition" required><br>
+                
+                <input type="hidden" name="fileName" value="<?php echo FileUtility::$currentFile; ?>">
+                <input type="submit" name="submit_entry" value="Add Entry">
+                <input type="reset" value="Reset">
+            </form>
+            <?php
+            if (!empty($errors)) {
+                echo '<div class="errors">';
+                foreach ($errors as $error) {
+                    echo '<p>' . htmlspecialchars($error) . '</p>';
+                }
+                echo '</div>';
+            }
+            ?>
+        </section>
+        <?php
+    }
+    static function uploadCsv($messages = []){
+        ?>
+        <section id="upload-csv">
+            <h2>Upload Historical Data (CSV)</h2>
+            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data">
+                <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+                <input type="submit" name="submit_csv" value="Upload CSV">
+            </form>
+            <?php
+            foreach ($messages as $msg) {
+                $class = str_starts_with($msg, 'Success') ? 'success' : 'errors';
+                echo "<div class=\"$class\"><p>" . htmlspecialchars($msg) . "</p></div>";
+            }
+            ?>
+        </section>
+        <?php
+    }
+
+    static function uploadTxt($messages = []){
+        ?>
+        <section id="upload-txt">
+            <h2>Upload Current Forecast (TXT)</h2>
+            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data">
+                <input type="file" id="txt_file" name="txt_file" accept=".txt" required>
+                <input type="submit" name="submit_txt" value="Upload TXT">
+            </form>
+            <?php
+            foreach ($messages as $msg) {
+                $class = str_starts_with($msg, 'Success') ? 'success' : 'errors';
+                echo "<div class=\"$class\"><p>" . htmlspecialchars($msg) . "</p></div>";
+            }
+            ?>
+        </section>
+        <?php
+    }
+    static function listUploadedFiles($dir) {
+        ?>
+        <section class='uploaded-file'>
+            <h2>Uploaded Files</h2>
+            <?php
+            $files = glob($dir . '/*');
+            foreach ($files as $file) {
+                $name = basename($file);
+                $time = date("d-m-Y H:i", filemtime($file));
+                echo "<span>$name ($time)</span>
+                    <form method='post' style='display:inline;'>
+                        <input type='hidden' name='delete_file' value='$name'>
+                        <button type='submit'>Delete</button>
+                    </form>";
+            }
+            ?>
+        </section>
+        <?php
+    }
+
+    static function getWeatherList($weatherEntries){
+        ?>
+        <section id="weather-list">
+            <h2>Weather Entries</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Temperature (°C)</th>
+                        <th>Humidity (%)</th>
+                        <th>Condition</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if (isset($weatherEntries)) {
+                        foreach ($weatherEntries as $entry) {
+                            echo '<tr>';
+                            echo '<td>' . htmlspecialchars($entry->date) . '</td>';
+                            echo '<td>' . htmlspecialchars($entry->temperature) . '</td>';
+                            echo '<td>' . htmlspecialchars($entry->humidity) . '</td>';
+                            echo '<td>' . htmlspecialchars($entry->condition) . '</td>';
+                            echo '</tr>';
+                        }
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </section>
+        <?php
+    }
+    static function getForecast(){
+         ?>
+         <section id="forecast">
+             <h2>Current Forecast</h2>
+             <pre><?php echo htmlspecialchars($forecast ?? 'No forecast available.'); ?></pre>
+         </section>
+         <?php
+     }
+    static function getStatistics(){
+        ?>
+         <section id="statistics">
+             <h2>Statistics</h2>
+             <p>Total Entries: <?php echo isset($totalEntries) ? $totalEntries : 0; ?></p>
+             <p>Average Temperature: <?php echo isset($avgTemperature) ? number_format($avgTemperature, 2) . '°C' : 'N/A'; ?></p>
+             <p>Average Humidity: <?php echo isset($avgHumidity) ? number_format($avgHumidity, 2) . '%' : 'N/A'; ?></p>
+             <p>Most Common Condition: <?php echo isset($mostCommonCondition) ? htmlspecialchars($mostCommonCondition) : 'N/A'; ?></p>
+         </section>
+         <?php
+    }
+    static function getFooter($developer){
+        ?>
+                </main>
+            <footer>
+                <p>&copy; 2025 Weather Data Management System by <?php echo "$developer" ?> </p>
+            </footer>
+        </body>
+        </html>
+        <?php
+    }
+}
+<?php
+
+class Validate{ 
+    static $errors = array();
+
+    static function validate(){
+        $validDate = trim($_POST['date'] ?? '');
+        if(!(($d = DateTime::createFromFormat('d-m-Y', $validDate)) && 
+        $d->format('d-m-Y') === $validDate)){
+            self::$errors['Date Error'] = "Please enter a date in format:"; 
+        }
+        $validTemperature = filter_input(INPUT_POST, 'temperature', FILTER_VALIDATE_INT,[ 
+            "options" => ["min_range" => -50, "max_range" => 50]
+        ]);
+        if($validTemperature === false || $validTemperature === null){
+            self::$errors ['Temperature Error'] = "Please enter temperature from -50 to +50 (°C)";
+        }
+
+        $validHumidity = filter_input(INPUT_POST, 'humidity', FILTER_VALIDATE_INT,[ 
+            "options" => ["min_range" => 0, "max_range" => 100]
+        ]);
+        if($validHumidity === false || $validHumidity === null){
+            self::$errors ['Humidity Error'] = "Please enter humidity from 0 to 100 (%)";
+        }
+        $validCondition = trim($_POST['condition'] ?? '');
+        if (empty($validCondition)) {
+            self::$errors['Condition Error'] = "Please enter any condition";
+        }
+        
+        return self::$errors;
+    }
+    static function validateCsvRow(array $columns, int $lineNum): bool {
+        if (count($columns) !== 4) {
+            self::$errors[] = "Line $lineNum: Expected 4 values, found " . count($columns);
+            return false;
+        }
+
+        [$date, $temperature, $humidity, $condition] = array_map('trim', $columns);
+
+        $d = DateTime::createFromFormat('d-m-Y', $date);
+        if (!($d && $d->format('d-m-Y') === $date)) {
+            self::$errors[] = "Line $lineNum: Invalid date format ($date), expected d-m-Y";
+            return false;
+        }
+
+        if (!is_numeric($temperature) || $temperature < -50 || $temperature > 50) {
+            self::$errors[] = "Line $lineNum: Temperature ($temperature) must be between -50 and 50";
+            return false;
+        }
+
+        if (!is_numeric($humidity) || $humidity < 0 || $humidity > 100) {
+            self::$errors[] = "Line $lineNum: Humidity ($humidity) must be between 0 and 100";
+            return false;
+        }
+
+        if (empty($condition)) {
+            self::$errors[] = "Line $lineNum: Condition cannot be empty";
+            return false;
+        }
+
+        return true;
+    }
+}<?php
+
+class Weather{
+    public $date;
+    public $temperature;
+    public $humidity;
+    public $condition;
+
+    function __construct($date, $temperature, $humidity, $condition){
+        $this->date = $date;
+        $this->temperature = $temperature;
+        $this->humidity = $humidity;
+        $this->condition = $condition;
+    }
+}<?php
+
+class WeatherData{
+    static $weather = array();
+    static $weatherString = '';
+
+    function parseWrite(){
+    $date        = $_POST['date']        ?? null;
+    $temperature = $_POST['temperature'] ?? null;
+    $humidity    = $_POST['humidity']    ?? null;
+    $condition   = $_POST['condition']   ?? null;
+
+        self::$weatherString = "\n" . $date . ", " . $temperature . ", " . $humidity . ", " . $condition . ", ";
+    }
+    function parseRead($fileContent){
+        $lines = explode("\n",$fileContent);
+        
+        for($index = 1; $index < count($lines); $index++){
+            
+            $columns = explode(",", $lines[$index]);
+            $object = null;
+
+            $date        = trim($columns[0] ?? '');
+            $temperature = trim($columns[1] ?? '');
+            $humidity    = trim($columns[2] ?? '');
+            $condition   = trim($columns[3] ?? '');
+
+            $object = new Weather($date, $temperature, $humidity, $condition);
+            
+            self::$weather [] = $object;
+        }
+    }
+
+
+}<?php
+require_once('inc/config.inc.php');
+require_once('inc/Page.class.php');
+require_once('inc/FileUtility.class.php');
+require_once('inc/Validate.class.php');
+
+require_once('inc/WeatherData.class.php');
+require_once('inc/Weather.class.php');
+
+FileUtility::initialize(FILENAME);
+
+$weatherData = new WeatherData();
+$errors = [];
+$notifications = [];
+$csvNotifications = [];
+$txtNotifications = [];
+
+if(isset($_POST['submit_entry'])){
+    $errors = Validate::validate();
+    if(empty($errors)){
+        $weatherData -> parseWrite();
+        FileUtility::write(WeatherData::$weatherString);
+    }
+    $notifications = FileUtility::$notifications;
+}
+
+
+if (isset($_POST['submit_csv'])) {
+    $fileCsv = FileUtility::upload('csv_file', ['text/csv', 'text/plain']);
+    if (!empty($fileCsv)) {
+        $content = file_get_contents($fileCsv);
+        $lines = explode("\n", $content);
+        $csvData = [];
+        foreach ($lines as $index => $line) {
+            $line = trim($line);
+            if (empty($line))
+                continue;
+            $columns = str_getcsv($line);
+            if (Validate::validateCsvRow($columns, $index + 1)) {
+                $csvData[] = $line; 
+            }
+        }
+        if (!empty($csvData)) {
+            FileUtility::$currentFile = FILENAME;
+            FileUtility::write(implode("\n", $csvData) . "\n");
+        }
+    }
+    $csvNotifications = FileUtility::$notifications;
+    FileUtility::$notifications = []; // сбросим
+}
+
+if (isset($_POST['submit_txt'])) {
+    $fileTxt = FileUtility::upload('txt_file', ['text/plain']);
+    if (!empty($fileTxt)) {
+        $content = file_get_contents($fileTxt);
+        $lines = explode("\n", $content);
+        $txtData = [];
+        for ($i = 1; $i < count($lines); $i++) {
+            $line = trim($lines[$i]);
+            if (empty($line)) {
+                continue;
+            }
+
+            $columns = str_getcsv($line);
+            if (Validate::validateCsvRow($columns, $i + 1)) {
+                $txtData[] = $line;
+            }
+        }
+        if (!empty($txtData)) {
+            FileUtility::$currentFile = FILENAME;
+            FileUtility::write(implode("\n", $txtData) . "\n");
+        }
+    }
+    $txtNotifications = FileUtility::$notifications;
+    FileUtility::$notifications = []; // сбросим
+}
+
+
+if (isset($_POST['delete_file'])) {
+    $target = REPOSITORY . basename($_POST['delete_file']);
+    if (file_exists($target)) {
+        unlink($target);
+        FileUtility::$notifications[] = "Success: File deleted.";
+    } else {
+        FileUtility::$notifications[] = "Error: File not found.";
+    }
+}
+
+$content = FileUtility::read();
+if ($content !== false) {
+    $weatherData->parseRead($content);
+}
+Page::getHeader(Page::$title);
+Page::getForm($errors);
+Page::uploadCsv($csvNotifications);
+Page::uploadTxt($txtNotifications);
+Page::listUploadedFiles(REPOSITORY);
+Page::getWeatherList(WeatherData::$weather);
+Page::getFooter(Page::$developer);

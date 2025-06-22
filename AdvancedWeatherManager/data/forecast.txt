@@ -1,0 +1,2 @@
+Date, Temperature, Humidity, Condition
+12-12-1011, 12, 12, Текстовый ввод
