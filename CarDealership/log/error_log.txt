@@ -1,0 +1,58 @@
+[13-Jul-2025 22:43:33 Europe/Berlin] PHP Warning:  require_once(inc/PDOService.class.php): Failed to open stream: No such file or directory in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 3
+[13-Jul-2025 22:43:33 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'inc/PDOService.class.php' (include_path='.:/Applications/XAMPP/xamppfiles/lib/php') in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php:3
+Stack trace:
+#0 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 3
+[13-Jul-2025 22:44:30 Europe/Berlin] PHP Warning:  require_once(inc/Entity/Manufacturer.class.php): Failed to open stream: No such file or directory in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 4
+[13-Jul-2025 22:44:30 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'inc/Entity/Manufacturer.class.php' (include_path='.:/Applications/XAMPP/xamppfiles/lib/php') in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php:4
+Stack trace:
+#0 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 4
+[13-Jul-2025 22:45:02 Europe/Berlin] PHP Warning:  require_once(inc/Entity/Manufacturer.class.php): Failed to open stream: No such file or directory in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 4
+[13-Jul-2025 22:45:02 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'inc/Entity/Manufacturer.class.php' (include_path='.:/Applications/XAMPP/xamppfiles/lib/php') in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php:4
+Stack trace:
+#0 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 4
+[13-Jul-2025 22:45:34 Europe/Berlin] PHP Warning:  require_once(inc/Entity/Manufacturer.class.php): Failed to open stream: No such file or directory in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 4
+[13-Jul-2025 22:45:34 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'inc/Entity/Manufacturer.class.php' (include_path='.:/Applications/XAMPP/xamppfiles/lib/php') in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php:4
+Stack trace:
+#0 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 4
+[13-Jul-2025 22:55:48 Europe/Berlin] PHP Warning:  Undefined property: Customer::$model in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 85
+[13-Jul-2025 22:55:48 Europe/Berlin] PHP Warning:  Undefined property: Customer::$year in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 85
+[13-Jul-2025 22:55:48 Europe/Berlin] PHP Warning:  Undefined property: Customer::$model in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 85
+[13-Jul-2025 22:55:48 Europe/Berlin] PHP Warning:  Undefined property: Customer::$year in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 85
+[13-Jul-2025 22:57:04 Europe/Berlin] PHP Warning:  Undefined property: Customer::$model in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 85
+[13-Jul-2025 22:57:04 Europe/Berlin] PHP Warning:  Undefined property: Customer::$year in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 85
+[13-Jul-2025 22:57:04 Europe/Berlin] PHP Warning:  Undefined property: Customer::$model in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 85
+[13-Jul-2025 22:57:04 Europe/Berlin] PHP Warning:  Undefined property: Customer::$year in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 85
+[13-Jul-2025 23:01:15 Europe/Berlin] PHP Warning:  require_once(inc/PDOService.class.php): Failed to open stream: No such file or directory in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 3
+[13-Jul-2025 23:01:15 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'inc/PDOService.class.php' (include_path='.:/Applications/XAMPP/xamppfiles/lib/php') in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php:3
+Stack trace:
+#0 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 3
+[13-Jul-2025 23:02:29 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function Page::editOrderForm(), 2 passed in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 91 and exactly 3 expected in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php:112
+Stack trace:
+#0 /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php(91): Page::editOrderForm(Object(Order), Array)
+#1 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 112
+[13-Jul-2025 23:04:09 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function Page::editOrderForm(), 2 passed in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 91 and exactly 3 expected in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php:112
+Stack trace:
+#0 /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php(91): Page::editOrderForm(Object(Order), Array)
+#1 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 112
+[13-Jul-2025 23:05:22 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function Page::editOrderForm(), 2 passed in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 91 and exactly 3 expected in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php:112
+Stack trace:
+#0 /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php(91): Page::editOrderForm(Object(Order), Array)
+#1 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 112
+[13-Jul-2025 23:05:40 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function Page::editOrderForm(), 2 passed in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 91 and exactly 3 expected in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php:112
+Stack trace:
+#0 /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php(91): Page::editOrderForm(Object(Order), Array)
+#1 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 112
+[13-Jul-2025 23:06:27 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function Page::editOrderForm(), 2 passed in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php on line 91 and exactly 3 expected in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php:112
+Stack trace:
+#0 /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/index.php(91): Page::editOrderForm(Object(Order), Array)
+#1 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/MyPHPprojects/CarDealership/inc/Entity/Page.class.php on line 112
