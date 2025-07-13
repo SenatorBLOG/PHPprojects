@@ -1,0 +1,97 @@
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="author" content="Mikhail Senatorov">
+            <title>Luxury Cars Inc. - Order Management</title>
+            <link href="css/styles.css" rel="stylesheet">
+        </head>
+        <body>
+            <header>
+                <h1>Luxury Cars Inc. - Order Management</h1>
+            </header>
+            <main>
+            <section class="main">
+            <h2>Current Orders</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Car</th>
+                        <th>Order Date</th>
+                        <th>Status</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="evenRow">
+                                <td>7</td>
+                                <td>Sara Conor</td>
+                                <td>Camry</td>
+                                <td>1999-07-07</td>
+                                <td>cancelled</td>
+                                <td><a href="?action=edit&id=7">Edit</a></td>
+                                <td><a href="?action=delete&id=7">Delete</a></td>
+                              </tr><tr class="oddRow">
+                                <td>5</td>
+                                <td>Mike Waazowsky</td>
+                                <td>Mustang</td>
+                                <td>1997-10-04</td>
+                                <td>completed</td>
+                                <td><a href="?action=edit&id=5">Edit</a></td>
+                                <td><a href="?action=delete&id=5">Delete</a></td>
+                              </tr><tr class="evenRow">
+                                <td>6</td>
+                                <td>James P Salivan</td>
+                                <td>Mustang</td>
+                                <td>1998-10-02</td>
+                                <td>completed</td>
+                                <td><a href="?action=edit&id=6">Edit</a></td>
+                                <td><a href="?action=delete&id=6">Delete</a></td>
+                              </tr>                </tbody>
+            </table>
+        </section>
+            <section class="form1">
+            <h3>Add New Order</h3>
+            <form action="/MyPHPprojects/CarDealership/index.php" method="post">
+                <table>
+                    <tr>
+                        <td>Customer Name</td>
+                        <td><input type="text" name="customer_name" placeholder="Enter customer name" required></td>
+                    </tr>
+                    <tr>
+                        <td>Car</td>
+                        <td>
+                            <select name="car_id" required>
+                                <option value="1">Camry (2023)</option><option value="2">X5 (2022)</option><option value="3">Mustang (2023)</option>                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Order Date</td>
+                        <td><input type="date" name="order_date" required></td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>
+                            <select name="status" required>
+                                <option value="pending">Pending</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="action" value="create">
+                <input type="submit" value="Add Order">
+            </form>
+        </section>
+                </main>
+            <footer>
+                <p>© 2025 Luxury Cars Inc.. All rights reserved.</p>
+                <p>Developed by Mikhail Senatorov</p>
+            </footer>
+        </body>
+        </html>
+    
